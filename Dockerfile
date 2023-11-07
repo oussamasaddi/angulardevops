@@ -1,26 +1,14 @@
-# Use an official Node.js runtime as the base image
-FROM node:14.21.0
 
-# Set the working directory to /app
+FROM node:14.21.0 AS builder
+
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install Angular CLI globally
-RUN npm install -g @angular/cli
-
-# Install project dependencies
-RUN npm install
-
-# Copy the rest of your application code to the working directory
 COPY . .
+COPY package.json package-lock.json ./
+RUN npm install
+RUN npm run build --prod
 
-# Build your Angular application
-RUN ng build --prod
-
-# Expose the port the app will run on
+FROM nginx:alpine
+COPY nginx.conf  /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist/crudtuto-Front /usr/share/nginx/html
 EXPOSE 88
-
-# Start the application
-CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "88"]
+CMD ["nginx", "-g", "daemon off;"]
