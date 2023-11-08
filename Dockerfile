@@ -1,16 +1,16 @@
 
-FROM node:14.21.0 AS build
+FROM node:14.21.0 AS builder
 
 WORKDIR /app
-
 COPY . .
-
+COPY package.json package-lock.json ./
 RUN npm install
-
-RUN npm run build
-
-# Serve Application using Nginx Server
+RUN npm run build --prod
+# stage 2
 FROM nginx:alpine
-COPY --from=build /app/dist/crudtuto-Front /usr/share/nginx/html
+COPY nginx.conf  /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist/crudtuto-Front /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 
 
