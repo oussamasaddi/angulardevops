@@ -11,6 +11,6 @@ RUN npm run build
 
 # Serve Application using Nginx Server
 FROM nginx:alpine
-COPY --from=build /app/dist/project-name/ /usr/share/nginx/html
+COPY --from=build /app/dist/crudtuto-Front /usr/share/nginx/html
 
 EXPOSE 4200
